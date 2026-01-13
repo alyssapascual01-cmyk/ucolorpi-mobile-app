@@ -1,0 +1,38 @@
+import 'package:flutter/material.dart';
+import 'signin_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; // <-- This is from flutterfire configure
+
+
+void main() async {
+  
+  // Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        // Apply Poppins font to the whole app via Google Fonts
+        textTheme:
+            GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+        primaryTextTheme:
+            GoogleFonts.poppinsTextTheme(Theme.of(context).primaryTextTheme),
+      ),
+      home: const SignInScreen(),
+    );
+  }
+}
