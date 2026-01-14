@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'mockData.dart';
+import 'fullReport.dart';
 import 'A_NewScan.dart';
 import 'recordHistory.dart';
 
@@ -142,15 +143,21 @@ class _HomePageState extends State<HomePage> {
         // top area (same spacing as provided mock)
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(16, 22, 16, 12),
+          // more top spacing, less bottom spacing
+          padding: const EdgeInsets.fromLTRB(16, 30, 16, 6),
           color: bgColor,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.isReturningUser ? 'Hi, WelcomeBack' : 'Hi, Welcome', style: const TextStyle(color: Color(0xFF33E4DB), fontSize: 12)),
-              const SizedBox(height: 6),
-              Text(_fullName ?? 'Jane Doe', style: const TextStyle(color: Colors.black87, fontSize: 22, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(text: widget.isReturningUser ? 'Welcome back, ' : 'Welcome, ', style: const TextStyle(color: Color(0xFF33E4DB), fontSize: 20, fontWeight: FontWeight.w700)),
+                    TextSpan(text: _fullName ?? 'Jane Doe', style: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.w700)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 2),
               const Text('UCOLORPI Device', style: TextStyle(color: Color(0xFF33E4DB), fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
               Column(
@@ -281,7 +288,9 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => FullReportPage(record: record)));
+                          },
                           style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), minimumSize: const Size(0, 28), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
                           child: const Text('View full result', style: TextStyle(color: Colors.white, fontSize: 13)),
                         )
