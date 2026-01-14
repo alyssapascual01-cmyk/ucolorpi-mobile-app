@@ -174,7 +174,7 @@ class _RecordHistoryPageState extends State<RecordHistoryPage> {
                     child: Row(
                       children: [
                         const Icon(Icons.search, color: Colors.grey),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         Expanded(
                           child: TextField(
                             decoration: const InputDecoration(border: InputBorder.none, hintText: 'Search', hintStyle: TextStyle(color: Colors.grey)),
@@ -188,21 +188,24 @@ class _RecordHistoryPageState extends State<RecordHistoryPage> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 6),
                 Container(
                   height: 44,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  constraints: const BoxConstraints(maxWidth: 96),
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
                   decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text('Sort by:', style: TextStyle(color: Colors.black54)),
+                      const Text('Sort', style: TextStyle(color: Colors.black54)),
                       const SizedBox(width: 6),
                       DropdownButtonHideUnderline(
                         child: DropdownButton<bool>(
+                          isDense: true,
                           value: _sortNewest,
                           items: const [
-                            DropdownMenuItem(value: true, child: Text('Newest')),
-                            DropdownMenuItem(value: false, child: Text('Oldest')),
+                            DropdownMenuItem(value: true, child: Text('New')),
+                            DropdownMenuItem(value: false, child: Text('Old')),
                           ],
                           onChanged: (v) {
                             if (v == null) return;
@@ -238,10 +241,14 @@ class _RecordHistoryPageState extends State<RecordHistoryPage> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('DATE: ${_formatDate(r.date)}', style: const TextStyle(color: Colors.black54)),
-                                      Text(generateRecordId(r, _all), style: const TextStyle(color: Colors.black54))
+                                      Expanded(
+                                        child: Text('DATE: ${_formatDate(r.date)}', style: const TextStyle(color: Colors.black54), overflow: TextOverflow.ellipsis),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Flexible(
+                                        child: Text(generateRecordId(r, _all), style: const TextStyle(color: Colors.black54), textAlign: TextAlign.right, overflow: TextOverflow.ellipsis),
+                                      ),
                                     ],
                                   ),
                                   const SizedBox(height: 12),

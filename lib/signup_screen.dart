@@ -11,6 +11,12 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+  final TextEditingController fullNameController = TextEditingController();
+  final TextEditingController dobController = TextEditingController();
+  String? sexValue;
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const Text('Full name', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   TextField(
+                    controller: fullNameController,
                     decoration: InputDecoration(
                       hintText: 'Alyssa Smith',
                       hintStyle: const TextStyle(color: Color(0xFF88D6D9)),
@@ -83,6 +90,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const Text('Date Of Birth', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   TextField(
+                    controller: dobController,
+                    readOnly: true,
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime(1990, 1, 1),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        dobController.text = '${picked.day.toString().padLeft(2, '0')} / ${picked.month.toString().padLeft(2, '0')} / ${picked.year}';
+                      }
+                    },
                     decoration: InputDecoration(
                       hintText: 'DD / MM /YYYY',
                       hintStyle: const TextStyle(color: Color(0xFF88D6D9)),
@@ -96,14 +116,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const SizedBox(height: 14),
                   const Text('Sex', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'female',
-                      hintStyle: const TextStyle(color: Color(0xFF88D6D9)),
-                      filled: true,
-                      fillColor: fieldFill,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: BorderSide.none),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: fieldFill,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: sexValue,
+                      onChanged: (v) => setState(() => sexValue = v),
+                      decoration: const InputDecoration(border: InputBorder.none),
+                      items: ['female', 'male', 'other'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
                     ),
                   ),
 
@@ -111,6 +134,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const Text('Email', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   TextField(
+                    controller: emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
                       hintText: 'example@gmail.com',
@@ -126,6 +150,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const Text('Password', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   TextField(
+                    controller: passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       hintText: '***************',
@@ -146,6 +171,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   const Text('Confirm Password', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 8),
                   TextField(
+                    controller: confirmController,
                     obscureText: _obscureConfirm,
                     decoration: InputDecoration(
                       hintText: '***************',
@@ -173,7 +199,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                   const SizedBox(height: 18),
                   GestureDetector(
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HealthBackgroundScreen())),
+                    onTap: () {
+                      final fullName = fullNameController.text.trim();
+                      final dob = dobController.text.trim();
+                      final sex = sexValue;
+                      final email = emailController.text.trim();
+                      final password = passwordController.text;
+                      final confirm = confirmController.text;
+
+                      if (fullName.isEmpty || dob.isEmpty || sex == null || email.isEmpty || password.isEmpty || confirm.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all required fields')));
+                        return;
+                      }
+
+                      if (password != confirm) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+                        return;
+                      }
+
+                      final profile = {
+                        'fullName': fullName,
+                        'dateOfBirth': dob,
+                        'sex': sex,
+                        'email': email,
+                        'password': password,
+                      };
+
+                      Navigator.of(context).push(MaterialPageRoute(builder: (_) => HealthBackgroundScreen(profile: profile)));
+                    },
                     child: Container(
                       width: double.infinity,
                       height: 50,
@@ -211,5 +264,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    fullNameController.dispose();
+    dobController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmController.dispose();
+    super.dispose();
   }
 }
