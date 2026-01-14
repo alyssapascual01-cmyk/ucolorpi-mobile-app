@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'mockData.dart';
 import 'A_NewScan.dart';
 import 'recordHistory.dart';
@@ -16,6 +18,25 @@ enum HealthStatus { normal, attention, abnormal }
 class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
   int navIndex = 0;
+  String? _fullName;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFullName();
+  }
+
+  Future<void> _loadFullName() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final name = doc.data()?['fullName'] as String?;
+      if (mounted) setState(() => _fullName = name ?? user.email);
+    } catch (_) {
+      // ignore errors and keep default
+    }
+  }
 
   // Device connection state: false by default. When true, UI shows Connected and button becomes 'Start a New Scan'.
   bool deviceConnected = false;
@@ -113,7 +134,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Text(widget.isReturningUser ? 'Hi, WelcomeBack' : 'Hi, Welcome', style: const TextStyle(color: Color(0xFF33E4DB), fontSize: 12)),
               const SizedBox(height: 6),
-              const Text('Jane Doe', style: TextStyle(color: Colors.black87, fontSize: 22, fontWeight: FontWeight.bold)),
+              Text(_fullName ?? 'Jane Doe', style: const TextStyle(color: Colors.black87, fontSize: 22, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               const Text('UCOLORPI Device', style: TextStyle(color: Color(0xFF33E4DB), fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -194,16 +215,19 @@ class _HomePageState extends State<HomePage> {
                     icon: const Icon(Icons.chevron_left, color: Colors.white),
                   ),
 
-                  Column(
-                    children: [
-                      Text('Quick Summary Of Previous Test', style: TextStyle(color: Colors.white.withOpacity(0.95), fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
-                        decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), border: Border.all(color: Colors.white54)),
-                        child: Text('${_formatDate(record.date)}', style: const TextStyle(color: Colors.white)),
-                      )
-                    ],
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Quick Summary Of Previous Test', textAlign: TextAlign.center, style: TextStyle(color: Colors.white.withOpacity(0.95), fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), border: Border.all(color: Colors.white54)),
+                          child: Text('${_formatDate(record.date)}', style: const TextStyle(color: Colors.white)),
+                        )
+                      ],
+                    ),
                   ),
 
                   IconButton(
@@ -300,16 +324,16 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
                     children: [
                       const Text('Quick Health Tips', style: TextStyle(color: Color(0xFF00BBD3), fontWeight: FontWeight.bold)),
                       const SizedBox(width: 8),
                       const Text('Result: ', style: TextStyle(color: Colors.black54)),
-                      const SizedBox(width: 6),
                       Icon(Icons.circle, color: statusColor(status), size: 12),
                       const SizedBox(width: 6),
                       Text(statusText(status), style: const TextStyle(fontWeight: FontWeight.w600)),
-                      const SizedBox(width: 8),
                       MouseRegion(
                         key: _infoKey,
                         onEnter: (_) => _showStatusInfoOverlay(),

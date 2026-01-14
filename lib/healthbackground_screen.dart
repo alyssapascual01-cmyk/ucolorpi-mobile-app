@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'signin_screen.dart';
 import 'homepage.dart';
+import 'auth.dart';
 
 class HealthBackgroundScreen extends StatefulWidget {
-  const HealthBackgroundScreen({super.key});
+  final Map<String, dynamic> profile;
+  const HealthBackgroundScreen({super.key, required this.profile});
 
   @override
   State<HealthBackgroundScreen> createState() => _HealthBackgroundScreenState();
@@ -102,8 +106,20 @@ class _HealthBackgroundScreenState extends State<HealthBackgroundScreen> {
                   const SizedBox(height: 8),
                   TextField(
                     controller: lastDiagController,
+                    readOnly: true,
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        lastDiagController.text = '${picked.day.toString().padLeft(2, '0')} / ${picked.month.toString().padLeft(2, '0')} / ${picked.year}';
+                      }
+                    },
                     decoration: InputDecoration(
-                      hintText: 'DD / MM /YYY',
+                      hintText: 'DD / MM /YYYY',
                       hintStyle: const TextStyle(color: Color(0xFF88D6D9)),
                       filled: true,
                       fillColor: fieldFill,
@@ -194,7 +210,67 @@ class _HealthBackgroundScreenState extends State<HealthBackgroundScreen> {
 
                   const SizedBox(height: 18),
                   GestureDetector(
-                    onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HomePage(isReturningUser: false))),
+                    onTap: () async {
+                      // Create Firebase user and save profile + health data to Firestore
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) => const Center(child: CircularProgressIndicator()),
+                      );
+
+                      try {
+                        final auth = Auth();
+                        final credential = await auth.createUserWithEmailAndPassword(
+                          email: widget.profile['email'],
+                          password: widget.profile['password'],
+                        );
+
+                        final uid = credential.user?.uid;
+                        if (uid == null) throw Exception('Failed to obtain uid');
+
+                        final Map<String, bool> cond = Map.from(conditions);
+                        final Map<String, dynamic> existingMap = {};
+                        cond.forEach((k, v) {
+                          if (k == 'others') {
+                            existingMap[k] = v ? otherController.text.trim() : '';
+                          } else {
+                            existingMap[k] = v;
+                          }
+                        });
+
+                        final data = {
+                          'fullName': widget.profile['fullName'],
+                          'dateOfBirth': widget.profile['dateOfBirth'],
+                          'sex': widget.profile['sex'],
+                          'email': widget.profile['email'],
+                          'previousDiagnosis': prevDiagController.text.trim(),
+                          'lastDiagnosisDate': lastDiagController.text.trim(),
+                          'currentMedication': medicationController.text.trim(),
+                          'existingConditions': existingMap,
+                          'doctorName': doctorController.text.trim(),
+                          'createdAt': FieldValue.serverTimestamp(),
+                        };
+
+                        await FirebaseFirestore.instance.collection('users').doc(uid).set(data);
+
+                        Navigator.of(context).pop(); // dismiss loading
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage(isReturningUser: false)));
+                      } on FirebaseAuthException catch (e) {
+                        Navigator.of(context).pop();
+                        if (e.code == 'email-already-in-use') {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Email already in use. Please log in or use another email.')));
+                        } else if (e.code == 'weak-password') {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password is too weak.')));
+                        } else if (e.code == 'invalid-email') {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Invalid email address.')));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign up failed: ${e.message ?? e.toString()}')));
+                        }
+                      } catch (e) {
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sign up failed: ${e.toString()}')));
+                      }
+                    },
                     child: Container(
                       width: double.infinity,
                       height: 50,
