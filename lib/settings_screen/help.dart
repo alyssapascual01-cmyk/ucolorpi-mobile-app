@@ -16,11 +16,12 @@ class HelpScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             const Text('Preparation Before Scanning', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF00BBD3))),
             const SizedBox(height: 10),
             const Text('- Wash and dry your hands properly\n- Collect fresh urine in clean container\n- Dip reagent strip for 1-2 seconds\n- Remove and tap gently\n- Place strip flat on U-COLORPI tray', style: TextStyle(fontSize: 12, color: Colors.black87)),
@@ -75,7 +76,8 @@ class HelpScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 24),
-          ],
+            ],
+          ),
         ),
       ),
     );

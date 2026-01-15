@@ -16,11 +16,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             const Text('Effective Date: January 2026', style: TextStyle(fontSize: 12, color: Colors.black87)),
             const SizedBox(height: 8),
             const Text('This Privacy Policy explains how U-COLORPI collects, uses, and protects user information. This application is developed for academic and research purposes only and is not intended to replace professional medical diagnosis or treatment.', style: TextStyle(fontSize: 12, color: Colors.black87)),
@@ -65,7 +66,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
             const SizedBox(height: 6),
             const Text('For questions: alyssasicatpascual@gmail.com', style: TextStyle(fontSize: 12, color: Colors.black87)),
             const SizedBox(height: 24),
-          ],
+            ],
+          ),
         ),
       ),
     );

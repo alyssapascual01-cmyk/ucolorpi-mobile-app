@@ -66,11 +66,14 @@ class ANewScanScreen extends StatelessWidget {
             const SizedBox(height: 18),
 
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+              child: SafeArea(
+                top: false,
+                bottom: true,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                     _infoCard(
                       title: 'Preparation Before Scanning',
                       items: const [
@@ -117,6 +120,7 @@ class ANewScanScreen extends StatelessWidget {
                     const Center(child: Text('Estimated Scan Time: 10-15 Seconds', style: TextStyle(color: Colors.black54, fontSize: 12))),
                     const SizedBox(height: 24),
                   ],
+                ),
                 ),
               ),
             ),
