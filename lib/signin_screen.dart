@@ -53,8 +53,8 @@ class _SignInScreenState extends State<SignInScreen> {
           Container(
             width: double.infinity,
             height: 100,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
@@ -62,36 +62,30 @@ class _SignInScreenState extends State<SignInScreen> {
                   Color(0xFF00BBD3),
                 ],
               ),
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(0),
-              ),
             ),
-            child: SafeArea(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Back button aligned left
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () {},
+            child: Stack(
+              children: [
+                // Back button aligned left
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () {},
+                  ),
+                ),
+                // Centered title
+                const Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Hello!',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-
-                  // Centered title
-                  const Center(
-                    child: Text(
-                      'Hello!',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
 
