@@ -32,8 +32,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       resizeToAvoidBottomInset: true, 
       // 2. We remove the main Column/Expanded. 
       // Instead, the ENTIRE body is one ScrollView.
-      body: SingleChildScrollView(
-        child: Column(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
           children: [
             // ---------------- HEADER (Now inside the scroll view) ----------------
             Container(
@@ -344,6 +345,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

@@ -147,11 +147,14 @@ class _BNewScanScreenState extends State<BNewScanScreen> {
 
             // --- Progress card ---
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+              child: SafeArea(
+                top: false,
+                bottom: true,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                     Card(
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       child: Padding(
@@ -226,8 +229,7 @@ class _BNewScanScreenState extends State<BNewScanScreen> {
                       ),
                     ),
                   ],
-                ),
-              ),
+                ),                ),              ),
             ),
           ],
         ),
