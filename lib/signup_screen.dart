@@ -28,54 +28,57 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      // OPTIONAL: If you don't want the keyboard to push ANYTHING up, uncomment line below:
-      resizeToAvoidBottomInset: false, 
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            // 1. REMOVED fixed height: 100
-            // 2. Added padding that respects the status bar + extra space
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 20, // Status bar + 20px
-              bottom: 20, // Bottom padding
-              left: 10,
-              right: 10,
-            ),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF33E4DB), Color(0xFF00BBD3)],
+      // 1. Ensure this is true so the view resizes when keyboard opens
+      resizeToAvoidBottomInset: true, 
+      // 2. We remove the main Column/Expanded. 
+      // Instead, the ENTIRE body is one ScrollView.
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // ---------------- HEADER (Now inside the scroll view) ----------------
+            Container(
+              width: double.infinity,
+              // Dynamic padding for Status Bar
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 20,
+                bottom: 20,
+                left: 10,
+                right: 10,
               ),
-            ),
-            // 3. Removed SafeArea widget (we handled it manually in padding above)
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF33E4DB), Color(0xFF00BBD3)],
                 ),
-                const Center(
-                  child: Text(
-                    'New Account',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ),
-                ),
-              ],
+                  const Center(
+                    child: Text(
+                      'New Account',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+            // ---------------- END HEADER ----------------
 
-          Expanded(
-            child: SingleChildScrollView(
+            // ---------------- FORM BODY ----------------
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,6 +165,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   TextField(
                     controller: passwordController,
                     obscureText: _obscurePassword,
+                    // 3. Keep scrollPadding just in case
+                    scrollPadding: const EdgeInsets.only(bottom: 100),
                     decoration: InputDecoration(
                       hintText: '***************',
                       hintStyle: const TextStyle(color: Color(0xFF88D6D9)),
@@ -183,6 +188,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   TextField(
                     controller: confirmController,
                     obscureText: _obscureConfirm,
+                    scrollPadding: const EdgeInsets.only(bottom: 100),
                     decoration: InputDecoration(
                       hintText: '***************',
                       hintStyle: const TextStyle(color: Color(0xFF88D6D9)),
@@ -337,8 +343,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

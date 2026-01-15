@@ -54,10 +54,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Gradient header (consistent with other screens)
           Container(
             width: double.infinity,
-            height: 100,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20, 
+              bottom: 20,
+              left: 10,
+              right: 10,
+            ),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -66,6 +70,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
             ),
             child: Stack(
+              alignment: Alignment.center, // Ensure stack defaults to center
               children: [
                 Align(
                   alignment: Alignment.centerLeft,

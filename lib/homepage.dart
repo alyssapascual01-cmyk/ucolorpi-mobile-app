@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
     if (user == null) return;
     _userDocSubscription = FirebaseFirestore.instance.collection('users').doc(user.uid).snapshots().listen((doc) {
       final name = doc.data()?['fullName'] as String?;
-      if (mounted) setState(() => _fullName = name ?? user.email);
+      if (mounted) setState(() => _fullName = name ?? 'User');
     }, onError: (_) {
       // ignore
     });
