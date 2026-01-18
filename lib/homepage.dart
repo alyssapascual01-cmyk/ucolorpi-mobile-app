@@ -28,9 +28,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // initial load and keep in sync when auth state changes
     _loadFullName();
-    // Attach real-time listener to the user's document so UI updates when profile changes
     _attachUserDocListener(FirebaseAuth.instance.currentUser);
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
       _loadFullName(user);
@@ -71,11 +69,9 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Device connection state: false by default. When true, UI shows Connected and button becomes 'Start a New Scan'.
   bool deviceConnected = false;
   bool isConnecting = false;
 
-  // Hover/tap status info overlay
   OverlayEntry? _statusInfoOverlay;
   final GlobalKey _infoKey = GlobalKey();
 
@@ -108,7 +104,6 @@ class _HomePageState extends State<HomePage> {
     ];
 
     for (var v in chemicals) {
-      // Case-insensitive check for 'negative'
       if (v.toLowerCase() != 'negative') outOfRange++;
     }
 
@@ -116,7 +111,6 @@ class _HomePageState extends State<HomePage> {
     if (outOfRange <= 2) return HealthStatus.attention;
     return HealthStatus.abnormal;
   }
-  // --- UPDATED LOGIC END ---
 
   Color statusColor(HealthStatus s) {
     switch (s) {
@@ -160,10 +154,8 @@ class _HomePageState extends State<HomePage> {
 
     final Widget homeContent = Column(
       children: [
-        // top area (same spacing as provided mock)
         Container(
           width: double.infinity,
-          // more top spacing, less bottom spacing
           padding: const EdgeInsets.fromLTRB(16, 30, 16, 6),
           color: bgColor,
           child: Column(
@@ -205,8 +197,10 @@ class _HomePageState extends State<HomePage> {
                         : () async {
                             if (!deviceConnected) {
                               setState(() => isConnecting = true);
-                              // Simulate a connection attempt. Replace with real device discovery/connect logic later.
                               await Future.delayed(const Duration(seconds: 2));
+
+                              if (!context.mounted) return;
+
                               setState(() {
                                 isConnecting = false;
                                 deviceConnected = true;
@@ -266,7 +260,7 @@ class _HomePageState extends State<HomePage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), border: Border.all(color: Colors.white54)),
-                          child: Text('${_formatDate(record.date)}', style: const TextStyle(color: Colors.white)),
+                          child: Text(_formatDate(record.date), style: const TextStyle(color: Colors.white)),
                         )
                       ],
                     ),
@@ -302,7 +296,7 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Icon(Icons.circle, color: statusColor(status), size: 12),
                                 const SizedBox(width: 6),
-                                Text(statusText(status), style: TextStyle(color: Colors.white)),
+                                Text(statusText(status), style: const TextStyle(color: Colors.white)),
                               ],
                             ),
                           ],
@@ -368,10 +362,8 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
                   const Text('Quick Health Tips', style: TextStyle(color: Color(0xFF00BBD3), fontWeight: FontWeight.bold)),
                   
-                  // UPDATED: Result Status on its own line below title
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -418,7 +410,6 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      // show Record or Settings depending on nav index
       body: navIndex == 1 ? const RecordHistoryPage() : (navIndex == 2 ? const SettingsMain() : homeContent),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFFFFFFFF),
@@ -504,9 +495,9 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 8),
           _statusRow(Colors.green, 'NORMAL STATUS', 'All parameters are within the healthy range. No signs of infection, glucose, or protein detected.'),
           const SizedBox(height: 8),
-          _statusRow(Color(0xFFFF8B00), 'ATTENTION STATUS', 'One or more readings are slightly outside normal. Re-test or monitor in the next 24 hours.'),
+          _statusRow(const Color(0xFFFF8B00), 'ATTENTION STATUS', 'One or more readings are slightly outside normal. Re-test or monitor in the next 24 hours.'),
           const SizedBox(height: 8),
-          _statusRow(Color(0xFFFF0004), 'ABNORMAL STATUS', 'Critical values detected. Consult your doctor.'),
+          _statusRow(const Color(0xFFFF0004), 'ABNORMAL STATUS', 'Critical values detected. Consult your doctor.'),
         ],
       ),
     );
@@ -533,7 +524,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   static String _formatDate(DateTime d) {
-    // Example: OCTOBER 28, 2025
     final month = _monthNames[d.month - 1].toUpperCase();
     return '$month ${d.day}, ${d.year}';
   }

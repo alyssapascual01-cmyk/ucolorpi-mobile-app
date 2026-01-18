@@ -11,7 +11,7 @@ class BNewScanScreen extends StatefulWidget {
   static const gradientEnd = Color(0xFF00BBD3);
 
   @override
-  _BNewScanScreenState createState() => _BNewScanScreenState();
+  State<BNewScanScreen> createState() => _BNewScanScreenState();
 }
 
 class _BNewScanScreenState extends State<BNewScanScreen> {
@@ -47,7 +47,6 @@ class _BNewScanScreenState extends State<BNewScanScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              // Wrapped in IntrinsicHeight so buttons match height
               IntrinsicHeight(
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -84,7 +83,6 @@ class _BNewScanScreenState extends State<BNewScanScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        // Dynamic padding allows button to grow with text (fixes the clipping issue)
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
@@ -131,7 +129,6 @@ class _BNewScanScreenState extends State<BNewScanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Determine if finished for the text status
     final bool isCompleted = _progress >= 1.0;
 
     return Scaffold(
@@ -235,7 +232,6 @@ class _BNewScanScreenState extends State<BNewScanScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // FIX 1: Conditional text & maxLines prevents jumping/wrapping
                                     Text(
                                       isCompleted ? 'Completed' : 'Scanning in Progress...',
                                       maxLines: 1, 
@@ -259,7 +255,6 @@ class _BNewScanScreenState extends State<BNewScanScreen> {
                               const SizedBox(width: 12),
 
                               // --- Percentage Text ---
-                              // FIX 2: Fixed width SizedBox prevents layout shift when numbers grow
                               SizedBox(
                                 width: 45, 
                                 child: Text(
