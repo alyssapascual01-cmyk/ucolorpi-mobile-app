@@ -36,7 +36,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) {
-      // Not signed in - pop to sign in
       if (mounted) Navigator.of(context).pop();
       return;
     }
@@ -46,7 +45,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final data = doc.data() ?? {};
       fullNameController.text = (data['fullName'] ?? '') as String;
       emailController.text = (data['email'] ?? user.email ?? '') as String;
-      // Normalize sex value to match dropdown options (Male/Female/Other)
+      
       final rawSex = (data['sex'] ?? '') as String?;
       if (rawSex != null && rawSex.trim().isNotEmpty) {
         final match = ['Male', 'Female', 'Other'].where((s) => s.toLowerCase() == rawSex.toLowerCase());
@@ -97,10 +96,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       await FirebaseFirestore.instance.collection('users').doc(user.uid).set(data, SetOptions(merge: true));
 
-      // update displayName on firebase auth if needed
       if ((user.displayName ?? '') != fullName) {
         await user.updateDisplayName(fullName);
-        // refresh locally
         await user.reload();
       }
 
@@ -130,102 +127,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: 100,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF33E4DB), Color(0xFF00BBD3)],
-              ),
-            ),
-            child: SafeArea(
-              child: Stack(
-                alignment: Alignment.center,
+      resizeToAvoidBottomInset: true, // Allow screen to move up
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView( // Wrap EVERYTHING
+              child: Column(
                 children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.of(context).pop(),
+                  // 🔹 Header (Part of the scroll view)
+                  Container(
+                    width: double.infinity,
+                    // Dynamic top padding
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).padding.top + 20,
+                      bottom: 20,
+                      left: 10,
+                      right: 10,
+                    ),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFF33E4DB), Color(0xFF00BBD3)],
+                      ),
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back, color: Colors.white),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ),
+                        const Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            'PROFILE',
+                            style: TextStyle(
+                              color: Colors.white, 
+                              fontSize: 20, 
+                              fontWeight: FontWeight.bold
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const Center(
-                    child: Text('PROFILE', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+
+                  // 🔹 Content
+                  SafeArea(
+                    top: false, // Header handles top padding
+                    bottom: true,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 8),
+
+                          const Text('Full Name', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 8),
+                          TextField(controller: fullNameController, decoration: _inputDecoration(hint: 'Jane Doe')),
+
+                          const SizedBox(height: 12),
+                          const Text('Email', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 8),
+                          TextField(controller: emailController, readOnly: true, decoration: _inputDecoration(hint: 'janedoe@example.com')),
+
+                          const SizedBox(height: 12),
+                          const Text('Sex', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            value: (_selectedSex == null || _selectedSex!.isEmpty) ? null : _selectedSex,
+                            decoration: _inputDecoration(hint: 'Select'),
+                            items: ['Male', 'Female', 'Other']
+                                .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                                .toList(),
+                            onChanged: (v) => setState(() => _selectedSex = v),
+                          ),
+
+                          const SizedBox(height: 12),
+                          const Text('Date Of Birth', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: dobController,
+                            readOnly: true,
+                            onTap: _pickDob,
+                            decoration: _inputDecoration(hint: 'DD / MM / YYYY'),
+                          ),
+
+                          const SizedBox(height: 24),
+                          GestureDetector(
+                            onTap: _updateProfile,
+                            child: Container(
+                              width: double.infinity,
+                              height: 50,
+                              margin: const EdgeInsets.symmetric(horizontal: 20),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(colors: [Color(0xFF33E4DB), Color(0xFF00BBD3)]),
+                                borderRadius: BorderRadius.circular(30),
+                                boxShadow: [BoxShadow(color: const Color(0xFF00BBD3).withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 6))],
+                              ),
+                              child: const Center(child: Text('Update Profile', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))),
+                            ),
+                          ),
+
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-
-          Expanded(
-            child: _loading
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 8),
-
-                        const Text('Full Name', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 8),
-                        TextField(controller: fullNameController, decoration: _inputDecoration(hint: 'Jane Doe')),
-
-                        const SizedBox(height: 12),
-                        const Text('Email', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 8),
-                        TextField(controller: emailController, readOnly: true, decoration: _inputDecoration(hint: 'janedoe@example.com')),
-
-                        const SizedBox(height: 12),
-                        const Text('Sex', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
-                          // ensure the value matches one of the items or null
-                          value: (_selectedSex == null || _selectedSex!.isEmpty) ? null : _selectedSex,
-                          decoration: _inputDecoration(hint: 'Select'),
-                          items: ['Male', 'Female', 'Other']
-                              .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                              .toList(),
-                          onChanged: (v) => setState(() => _selectedSex = v),
-                        ),
-
-                        const SizedBox(height: 12),
-                        const Text('Date Of Birth', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: dobController,
-                          readOnly: true,
-                          onTap: _pickDob,
-                          decoration: _inputDecoration(hint: 'DD / MM / YYYY'),
-                        ),
-
-                        const SizedBox(height: 24),
-                        GestureDetector(
-                          onTap: _updateProfile,
-                          child: Container(
-                            width: double.infinity,
-                            height: 50,
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(colors: [Color(0xFF33E4DB), Color(0xFF00BBD3)]),
-                              borderRadius: BorderRadius.circular(30),
-                              boxShadow: [BoxShadow(color: const Color(0xFF00BBD3).withOpacity(0.2), blurRadius: 8, offset: const Offset(0, 6))],
-                            ),
-                            child: const Center(child: Text('Update Profile', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))),
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-                      ],
-                    ),
-                  ),
-          ),
-        ],
-      ),
     );
   }
 }
