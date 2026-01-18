@@ -11,7 +11,7 @@ class BNewScanScreen extends StatefulWidget {
   static const gradientEnd = Color(0xFF00BBD3);
 
   @override
-  _BNewScanScreenState createState() => _BNewScanScreenState();
+  State<BNewScanScreen> createState() => _BNewScanScreenState();
 }
 
 class _BNewScanScreenState extends State<BNewScanScreen> {

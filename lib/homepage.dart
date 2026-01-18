@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, use_super_parameters
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -207,6 +209,10 @@ class _HomePageState extends State<HomePage> {
                               setState(() => isConnecting = true);
                               // Simulate a connection attempt. Replace with real device discovery/connect logic later.
                               await Future.delayed(const Duration(seconds: 2));
+
+                              // FIX: Use context.mounted instead of just mounted
+                              if (!context.mounted) return;
+
                               setState(() {
                                 isConnecting = false;
                                 deviceConnected = true;
@@ -266,7 +272,7 @@ class _HomePageState extends State<HomePage> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 10),
                           decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), border: Border.all(color: Colors.white54)),
-                          child: Text('${_formatDate(record.date)}', style: const TextStyle(color: Colors.white)),
+                          child: Text(_formatDate(record.date), style: const TextStyle(color: Colors.white)),
                         )
                       ],
                     ),
@@ -302,7 +308,7 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Icon(Icons.circle, color: statusColor(status), size: 12),
                                 const SizedBox(width: 6),
-                                Text(statusText(status), style: TextStyle(color: Colors.white)),
+                                Text(statusText(status), style: const TextStyle(color: Colors.white)),
                               ],
                             ),
                           ],
@@ -504,9 +510,9 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 8),
           _statusRow(Colors.green, 'NORMAL STATUS', 'All parameters are within the healthy range. No signs of infection, glucose, or protein detected.'),
           const SizedBox(height: 8),
-          _statusRow(Color(0xFFFF8B00), 'ATTENTION STATUS', 'One or more readings are slightly outside normal. Re-test or monitor in the next 24 hours.'),
+          _statusRow(const Color(0xFFFF8B00), 'ATTENTION STATUS', 'One or more readings are slightly outside normal. Re-test or monitor in the next 24 hours.'),
           const SizedBox(height: 8),
-          _statusRow(Color(0xFFFF0004), 'ABNORMAL STATUS', 'Critical values detected. Consult your doctor.'),
+          _statusRow(const Color(0xFFFF0004), 'ABNORMAL STATUS', 'Critical values detected. Consult your doctor.'),
         ],
       ),
     );
@@ -533,7 +539,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   static String _formatDate(DateTime d) {
-    // Example: OCTOBER 28, 2025
     final month = _monthNames[d.month - 1].toUpperCase();
     return '$month ${d.day}, ${d.year}';
   }
