@@ -1,5 +1,3 @@
-// ignore_for_file: file_names, use_super_parameters
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,9 +28,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // initial load and keep in sync when auth state changes
     _loadFullName();
-    // Attach real-time listener to the user's document so UI updates when profile changes
     _attachUserDocListener(FirebaseAuth.instance.currentUser);
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
       _loadFullName(user);
@@ -73,11 +69,9 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Device connection state: false by default. When true, UI shows Connected and button becomes 'Start a New Scan'.
   bool deviceConnected = false;
   bool isConnecting = false;
 
-  // Hover/tap status info overlay
   OverlayEntry? _statusInfoOverlay;
   final GlobalKey _infoKey = GlobalKey();
 
@@ -110,7 +104,6 @@ class _HomePageState extends State<HomePage> {
     ];
 
     for (var v in chemicals) {
-      // Case-insensitive check for 'negative'
       if (v.toLowerCase() != 'negative') outOfRange++;
     }
 
@@ -118,7 +111,6 @@ class _HomePageState extends State<HomePage> {
     if (outOfRange <= 2) return HealthStatus.attention;
     return HealthStatus.abnormal;
   }
-  // --- UPDATED LOGIC END ---
 
   Color statusColor(HealthStatus s) {
     switch (s) {
@@ -162,10 +154,8 @@ class _HomePageState extends State<HomePage> {
 
     final Widget homeContent = Column(
       children: [
-        // top area (same spacing as provided mock)
         Container(
           width: double.infinity,
-          // more top spacing, less bottom spacing
           padding: const EdgeInsets.fromLTRB(16, 30, 16, 6),
           color: bgColor,
           child: Column(
@@ -207,10 +197,8 @@ class _HomePageState extends State<HomePage> {
                         : () async {
                             if (!deviceConnected) {
                               setState(() => isConnecting = true);
-                              // Simulate a connection attempt. Replace with real device discovery/connect logic later.
                               await Future.delayed(const Duration(seconds: 2));
 
-                              // FIX: Use context.mounted instead of just mounted
                               if (!context.mounted) return;
 
                               setState(() {
@@ -374,10 +362,8 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title
                   const Text('Quick Health Tips', style: TextStyle(color: Color(0xFF00BBD3), fontWeight: FontWeight.bold)),
                   
-                  // UPDATED: Result Status on its own line below title
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -424,7 +410,6 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      // show Record or Settings depending on nav index
       body: navIndex == 1 ? const RecordHistoryPage() : (navIndex == 2 ? const SettingsMain() : homeContent),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFFFFFFFF),

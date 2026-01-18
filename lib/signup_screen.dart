@@ -29,53 +29,55 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // ---------------- HEADER ----------------
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top + 20,
-                  bottom: 20,
-                  left: 10,
-                  right: 10,
-                ),
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFF33E4DB), Color(0xFF00BBD3)],
-                  ),
-                ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-                    const Center(
-                      child: Text(
-                        'New Account',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+      // Removed SafeArea here so header sits behind status bar
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // ---------------- HEADER ----------------
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 20,
+                bottom: 20,
+                left: 10,
+                right: 10,
+              ),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFF33E4DB), Color(0xFF00BBD3)],
                 ),
               ),
-              // ---------------- END HEADER ----------------
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                  const Center(
+                    child: Text(
+                      'New Account',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // ---------------- END HEADER ----------------
 
-              // ---------------- FORM BODY ----------------
-              Padding(
+            // ---------------- FORM BODY ----------------
+            SafeArea(
+              top: false, 
+              child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                 child: Column(
@@ -372,7 +374,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                         try {
                           final auth = Auth();
-                          // FIX: Pass sex and dob to Auth class
                           await auth.createUserWithEmailAndPassword(
                             email: email,
                             password: password,
@@ -381,15 +382,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             dateOfBirth: dob,
                           );
 
-                          Navigator.of(context).pop(); // dismiss loading
+                          if (!context.mounted) return;
+
+                          Navigator.of(context).pop(); 
                           ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Account created.')));
+                              const SnackBar(
+                                  content: Text('Account created.')));
                           Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                   builder: (_) =>
                                       const HomePage(isReturningUser: false)));
                         } catch (e) {
-                          Navigator.of(context).pop();
+                          if (!context.mounted) return;
+                          
+                          Navigator.of(context).pop(); 
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('Sign up failed: ${e.toString()}')));
                         }
@@ -438,8 +444,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

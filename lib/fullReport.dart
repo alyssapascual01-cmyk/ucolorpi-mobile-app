@@ -69,7 +69,6 @@ class FullReportPage extends StatelessWidget {
       backgroundColor: const Color(0xFFF2F2F7),
       body: Column(
         children: [
-          // 1. MERGED HEADER
           Container(
             width: double.infinity,
             padding: EdgeInsets.only(
@@ -167,7 +166,6 @@ class FullReportPage extends StatelessWidget {
                         children: [
                           const Text('Remarks:', style: TextStyle(color: Colors.black54)),
                           const SizedBox(height: 6),
-                          // Updated to use the helper function
                           Text(_getRemarks(currentStatus)),
                         ],
                       ),

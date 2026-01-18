@@ -55,7 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
       dobController.text = (data['dateOfBirth'] ?? '') as String;
     } catch (e) {
-      // FIX 1: Check mounted before showing SnackBar in catch block
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to load profile: ${e.toString()}')));
       }
@@ -104,17 +103,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await user.reload();
       }
 
-      // FIX 2: Check mounted before popping the loading dialog
       if (!mounted) return;
-      Navigator.of(context).pop(); // dismiss loading
+      Navigator.of(context).pop(); 
       
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Profile updated')));
       Navigator.of(context).pop(true);
       
     } catch (e) {
-      // FIX 3: Check mounted before using context in catch block
       if (!mounted) return;
-      Navigator.of(context).pop(); // dismiss loading dialog
+      Navigator.of(context).pop(); 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Update failed: ${e.toString()}')));
     }
   }
@@ -134,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true, // Allow screen to move up
+      resizeToAvoidBottomInset: true, 
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView( // Wrap EVERYTHING
@@ -143,7 +140,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // 🔹 Header (Part of the scroll view)
                   Container(
                     width: double.infinity,
-                    // Dynamic top padding
                     padding: EdgeInsets.only(
                       top: MediaQuery.of(context).padding.top + 20,
                       bottom: 20,
@@ -184,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                   // 🔹 Content
                   SafeArea(
-                    top: false, // Header handles top padding
+                    top: false, 
                     bottom: true,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),

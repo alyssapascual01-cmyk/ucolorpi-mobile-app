@@ -64,11 +64,10 @@ class SettingsMain extends StatelessWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          Navigator.of(ctx).pop(); // Close the modal first
+                          Navigator.of(ctx).pop(); 
                           
                           await FirebaseAuth.instance.signOut();
                           
-                          // FIX: Check if the parent context is still valid
                           if (!context.mounted) return; 
 
                           Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const SignInScreen()));

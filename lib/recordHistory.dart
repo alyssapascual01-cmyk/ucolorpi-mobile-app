@@ -26,8 +26,6 @@ class _RecordHistoryPageState extends State<RecordHistoryPage> {
   String _statusText(UrinalysisRecord r) {
     int outOfRange = 0;
 
-    // FIX: Updated pH logic to accept a healthy range (5.0 - 8.0)
-    // Previously "if (ph != 7.0)" caused healthy pH 7.5 to count as an error.
     final ph = double.tryParse(r.ph) ?? 0.0;
     if (ph < 5.0 || ph > 8.0) outOfRange++;
 
@@ -48,7 +46,6 @@ class _RecordHistoryPageState extends State<RecordHistoryPage> {
     ];
 
     for (var v in chemicals) {
-      // Case-insensitive check for 'negative'
       if (v.toLowerCase() != 'negative') outOfRange++;
     }
 
@@ -139,7 +136,6 @@ class _RecordHistoryPageState extends State<RecordHistoryPage> {
       backgroundColor: const Color(0xFFF2F2F7),
       body: Column(
         children: [
-          // Gradient header
           Container(
             width: double.infinity,
             height: 100,

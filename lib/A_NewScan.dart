@@ -37,7 +37,6 @@ class ANewScanScreen extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            // Illustration & title
             Column(
               children: [
                 Container(
@@ -110,7 +109,6 @@ class ANewScanScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
                           foregroundColor: Colors.white,
-                          // Use primary color via backgroundColor with gradient simulated by a solid color to keep it simple
                           backgroundColor: gradientEnd,
                         ),
                         child: const Text('Start Scan', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
